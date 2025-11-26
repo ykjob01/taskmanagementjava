@@ -1,0 +1,223 @@
+================================================================================
+                    BÁO CÁO DỰ ÁN TASK MANAGEMENT SYSTEM
+================================================================================
+
+I. TỔNG QUAN DỰ ÁN
+------------------
+Tên dự án: Task Management System
+Mô tả: Hệ thống quản lý công việc (task) với xác thực JWT và phân quyền người dùng
+Công nghệ: Full-stack web application với Docker containerization
+Ngày hoàn thành: 26/11/2025
+
+
+II. CÔNG NGHỆ SỬ DỤNG
+----------------------
+
+1. Backend:
+   - Framework: Spring Boot 3.2.0
+   - Ngôn ngữ: Java 17
+   - Database: SQL Server 2022
+   - Security: Spring Security + JWT (JSON Web Token)
+   - ORM: Spring Data JPA + Hibernate
+   - Build tool: Maven
+
+2. Frontend:
+   - Framework: Vue.js 3
+   - Build tool: Vite
+   - HTTP Client: Axios
+   - Routing: Vue Router
+   - Styling: Vanilla CSS (theme đen trắng)
+
+3. Database:
+   - RDBMS: Microsoft SQL Server 2022
+   - Deployment: Docker container
+   - Auto-initialization: Script tự động tạo database
+
+4. DevOps:
+   - Containerization: Docker
+   - Orchestration: Docker Compose
+   - Multi-stage builds cho tối ưu image size
+
+
+III. KIẾN TRÚC HỆ THỐNG
+------------------------
+
+1. Kiến trúc tổng thể:
+   - 3-tier architecture: Frontend - Backend - Database
+   - RESTful API communication
+   - Stateless authentication với JWT
+   - Microservices ready (mỗi service trong container riêng)
+
+2. Cấu trúc dự án:
+   taskmanagement/
+   ├── backend/          # Spring Boot API
+   ├── frontend/         # Vue.js SPA
+   ├── database/         # SQL Server setup
+   └── docker-compose.yaml
+
+3. Network:
+   - Bridge network: task-network
+   - Service discovery: Container names
+   - Port mapping: 8080 (API), 5173 (Web), 1433 (DB)
+
+
+IV. TÍNH NĂNG CHÍNH
+--------------------
+
+1. Xác thực & Phân quyền:
+   ✓ Đăng ký tài khoản mới
+   ✓ Đăng nhập với JWT token
+   ✓ Mã hóa mật khẩu BCrypt
+   ✓ Token hết hạn sau 24 giờ
+   ✓ Auto logout khi token expired
+   ✓ 2 vai trò: USER và ADMIN
+
+2. Quản lý Task:
+   ✓ Tạo task mới
+   ✓ Xem danh sách tasks
+   ✓ Cập nhật task
+   ✓ Xóa task
+   ✓ Đánh dấu hoàn thành (Complete)
+   ✓ Phân trang (pagination)
+   ✓ Sắp xếp (sort by created date, deadline)
+   ✓ Lọc theo trạng thái (PENDING/COMPLETED)
+
+3. Phân quyền truy cập:
+   - USER: Chỉ xem/sửa/xóa tasks của chính mình
+   - ADMIN: Xem tất cả tasks của mọi user
+
+4. Validation:
+   ✓ Validation input phía backend (Bean Validation)
+   ✓ Validation deadline phải là thời gian tương lai
+   ✓ Required fields validation
+   ✓ Email format validation
+
+
+V. ĐIỂM NỔI BẬT
+----------------
+
+1. Deployment đơn giản:
+   - Chỉ cần 1 lệnh: docker compose up -d
+   - Không cần cài đặt Node.js, Java, Maven local
+   - Tự động build và chạy toàn bộ hệ thống
+
+2. Database tự động:
+   - Tự động tạo database khi khởi động
+   - Tự động tạo tables từ JPA entities
+   - Tự động tạo admin user mặc định
+
+3. Cross-platform:
+   - Chạy trên Windows, Mac, Linux
+   - Git attributes đảm bảo line endings đúng
+   - Docker đảm bảo môi trường nhất quán
+
+4. Security:
+   - JWT stateless authentication
+   - BCrypt password hashing
+   - CORS configuration
+   - Role-based access control
+   - Global exception handling
+
+5. User Experience:
+   - Giao diện đơn giản, tối giản (đen trắng)
+   - Responsive design
+   - Loading states
+   - Success/Error messages
+   - Nút Complete nổi bật cho tasks PENDING
+
+
+VI. THÔNG TIN TRIỂN KHAI
+-------------------------
+
+1. Yêu cầu hệ thống:
+   - Docker Desktop installed
+   - 4GB RAM khả dụng
+   - 5GB disk space
+
+2. Ports sử dụng:
+   - 8080: Backend API
+   - 5173: Frontend Web
+   - 1433: SQL Server
+
+3. Tài khoản mặc định:
+   - Username: admin
+   - Password: admin123
+   - Role: ADMIN
+
+4. Lệnh triển khai:
+   docker compose up -d
+
+5. Lệnh dừng:
+   docker compose down
+
+6. Xóa toàn bộ data:
+   docker compose down -v
+
+
+VII. CẤU TRÚC DATABASE
+----------------------
+
+1. Bảng users:
+   - id (PK, auto-increment)
+   - username (unique, not null)
+   - email (unique, not null)
+   - password (BCrypt hashed)
+   - role (USER/ADMIN)
+   - created_at, updated_at
+
+2. Bảng tasks:
+   - id (PK, auto-increment)
+   - title (not null)
+   - description (text)
+   - status (PENDING/COMPLETED)
+   - deadline (datetime, nullable)
+   - user_id (FK to users)
+   - created_at, updated_at
+
+
+VIII. API ENDPOINTS
+-------------------
+
+Authentication:
+  POST /api/auth/register - Đăng ký
+  POST /api/auth/login    - Đăng nhập
+
+Tasks (Authenticated):
+  GET    /api/tasks              - Lấy danh sách (pagination, sort, filter)
+  GET    /api/tasks/{id}         - Lấy chi tiết task
+  POST   /api/tasks              - Tạo task mới
+  PUT    /api/tasks/{id}         - Cập nhật task
+  DELETE /api/tasks/{id}         - Xóa task
+
+
+IX. TESTING & VALIDATION
+-------------------------
+
+✓ Backend build thành công
+✓ Frontend build thành công
+✓ Database khởi tạo thành công
+✓ Containers chạy healthy
+✓ API endpoints hoạt động
+✓ JWT authentication hoạt động
+✓ Role-based access control hoạt động
+✓ CRUD operations hoạt động
+✓ Pagination, sorting, filtering hoạt động
+
+
+X. KẾT LUẬN
+------------
+
+Dự án Task Management System đã hoàn thành đầy đủ các yêu cầu:
+- ✓ Hệ thống hoàn chỉnh với backend, frontend, database
+- ✓ Xác thực JWT và phân quyền
+- ✓ CRUD đầy đủ với pagination, sorting, filtering
+- ✓ Containerization hoàn toàn với Docker
+- ✓ Deployment đơn giản với 1 lệnh duy nhất
+- ✓ Cross-platform compatible
+- ✓ Giao diện đơn giản, dễ sử dụng
+
+Hệ thống sẵn sàng để sử dụng và triển khai production.
+
+================================================================================
+                              KẾT THÚC BÁO CÁO
+================================================================================
